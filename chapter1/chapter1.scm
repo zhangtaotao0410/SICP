@@ -48,6 +48,101 @@
           ((= kinds-of-coins 3) 10)
           ((= kinds-of-coins 2) 5)
           ((= kinds-of-coins 1) 1)))
+;最大公约数 GCD
+(define (gcd n m)
+  (cond ((= m 0) n)
+        (else (gcd m (remainder n m)))))
 
 
-(count-chang 100)
+;确定是不是素数
+(define (prime? n)
+  (= n (smallest-divisor n)))
+(define smallest-divisor
+    (lambda (n)
+      (find-divisor n 2)))
+(define find-divisor
+    (lambda (n test-divisor)
+      (cond ((> (square test-divisor) n) n)
+            ((divides? test-divisor n) test-divisor)
+            (else (find-divisor n (+ test-divisor 1))))))
+
+(define divides?
+    (lambda (n m)
+      (= (remainder m n) 0)))
+
+;1.3.1
+;从a到b各整数合
+(define (sum-integers a b)
+  (cond ((> a b) 0)
+        (else (+ a (sum-integers (add1 a) b)))))
+(define add1
+    (lambda (n)
+      (+ n 1)))
+(define sub1
+    (lambda (n)
+      (- n 1)))
+;从a到b各整数立方之和
+(define (sum-cube a b)
+  (cond ((> a b) 0)
+        (else (+ (cube a) (sum-cube (add1 a) b)))))
+(define cube
+    (lambda (n)
+      (* n n n)))
+
+(define (pi-sum a b)
+  (cond ((> a b) 0)
+        (else (+ (/ 1.0 (* a (+ a 2))) (pi-sum (+ a 4) b)))))
+
+(define sum
+    (lambda (term next a b)
+        (cond ((> a b) 0)
+              (else (+ (term a) (sum term next (next a) b))))))
+;let表达式 (let ((<var1> <exp1>) (<var2> <exp2>)) <body>)
+;((lambda (<var1> <var2>) <body>) <exp1> <exp2>)
+
+;通过区间折半寻找方程的根
+(define search
+    (lambda (f neg-point pos-point)
+      (let ((mid-point (average neg-point pos-point)))
+           (if (close-enough? neg-point pos-point)
+               mid-point
+               (let ((test-point (f mid-point)))
+                    (cond ((positive? test-point) (search f neg-point mid-point))
+                          ((negative? test-point) (search f mid-point pos-point))
+                          (else mid-point)))))))
+(define close-enough?
+    (lambda (n m) (< (abs (- n m)) 0.001)))
+
+(define half-method
+    (lambda (f a b)
+      (let ((a-value (f a))
+            (b-value (f b)))
+           (cond ((and (positive? a-value) (negative? b-value))
+                  (search f b a))
+                 ((and (negative? a-value) (positive? b-value))
+                  (search f a b))
+                 (else (error "Values are not of oppos]ite sign" a b))))))
+
+;找出函数的不动点
+(define (fixed-point f first-guess)
+  (define (try guess)
+    (let ((next (f guess)))
+         (if (close-enough? next guess)
+             next
+             (try next))))
+  (try first-guess))
+
+;牛顿法,导数表示
+(define (deriv g)
+  (lambda (x)
+    (/ (- (g (+ x dx)) (g x))
+       dx)))
+(define dx 0.0000001)
+(define (newton-transform g)
+  (lambda (x) (- x (/ (g x) ((deriv g) x)))))
+
+(define (newton-method g guess)
+  (fixed-point (newton-transform g) guess))
+(define (sqrt1 x)
+  (newton-method (lambda (a) (- (square a) x)) 1.0))
+(sqrt1 9)
