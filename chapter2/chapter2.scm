@@ -1,3 +1,7 @@
+(define atom?
+    (lambda (x)
+      (and (not (null? x)) (not (pair? x)))))
+
 (define (cons* x y)
   (define dispatch
       (lambda (m)
@@ -22,6 +26,18 @@
     (lambda (l1 l2)
       (cond ((null? l1) l2)
             (else (cons (car l1) (append (cdr l1) l2))))))
+
 (define l1 (list 1 2 3 4))
 (define l2 (list 5 6 7 8))
-(append l1 l2)
+;---映射
+(define map
+    (lambda (pro list)
+      (cond ((null? list) (quote ()))
+            (else (cons (pro (car list)) (map pro (cdr list)))))))
+(define count-leaves
+    (lambda (x)
+      (cond ((null? x) 0)
+            ((not (pair? x)) 1)
+            (else (+ (count-leaves (car x))
+                     (count-leaves (cdr x)))))))
+(count-leaves (list 1 2 3 (list 1 2 3 (list 1 2 (list 1)))))
