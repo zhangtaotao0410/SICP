@@ -13,5 +13,11 @@
     (lambda (pro l)
       (cond ((null? l) (quote ()))
             (else (cons (pro (car l)) (map pro (cdr l)))))))
+;过滤过程
+(define filter
+    (lambda (predicate l)
+        (cond ((null? l) (quote ()))
+              (else (cond ((predicate (car l)) (cons (car l) (filter predicate (cdr l))))
+                          (else (filter predicate (cdr l))))))))
 
-(sum-odd-square (list 1 2 (list 1 2 (list 1 2) 1) 3))
+(filter odd? (list 1 2 3 4 5))
