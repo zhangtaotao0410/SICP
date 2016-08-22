@@ -40,4 +40,15 @@
             ((not (pair? x)) 1)
             (else (+ (count-leaves (car x))
                      (count-leaves (cdr x)))))))
-(count-leaves (list 1 2 3 (list 1 2 3 (list 1 2 (list 1)))))
+
+(define (scale-tree tree pro)
+  (cond ((null? tree) (quote ()))
+        ((atom? (car tree)) (cons (pro (car tree)) (scale-tree (cdr tree) pro)))
+        (else (cons (scale-tree (car tree) pro) (scale-tree (cdr tree) pro)))))
+
+(define (scale-tree-map tree fac)
+  (map (lambda (sub-tree)
+          (cond ((pair? sub-tree) (scale-tree-map sub-tree fac))
+                (else (* fac sub-tree))))
+       tree))
+(scale-tree-map (list 1 2 3 (list 1 2 3 (list 1 2 (list 1)))) 10)
